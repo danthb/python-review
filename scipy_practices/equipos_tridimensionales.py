@@ -3,7 +3,7 @@ from numpy import array
 import pandas as pd
 df = pd.DataFrame()
 df['MODELO'] = ['Bus urbano #27', 'Silla tipo bar', 'Piano',  'Fuente con flores',
-                'Bus urbano #27', 'Puesto de Yogurt', 'Playground', 'Bus urbano #27']
+                'Bus urbano #27', 'Puesto de Yogurt', 'Playground']
 df['USUARIO'] = ['Ted Mosby', 'Art Vandelay', 'Art Vandelay', 'Michael',
                  'Mark Brendanawics', 'Michael', 'Mark Brendanawics', 'LeCorbuiser_2020']
 df['PAGO'] = [24.99, 4.99, 4.99, 0, 12, 0, 14, 0]
@@ -130,3 +130,90 @@ def calcular_estadisticas(descargas: pd.DataFrame) -> pd.DataFrame:
     data["DESV. ESTRELLAS"] = data["DESV. ESTRELLAS"].fillna(0).round(2)
     data = data.sort_index()
     return data
+
+
+# %%
+def calcular_estadisticas(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["PAGO"] > 0]
+    df["COMENTARIO"] = df["COMENTARIO"].apply(
+        lambda x: int(x))  # 1 if str(x)=="True" else 0
+    # agrupamos los datos
+    grupo = df.groupby("MODELO")
+
+    # obtenemos los datos
+    # contabilizacion de comentariso True
+    count_comentarios = grupo["COMENTARIO"].sum().to_list()
+    cantidad = grupo["COMENTARIO"].count().to_list()  # cantidad
+    # promedio de Pago y estrellas, no se convierte a lista
+    prom = grupo[["PAGO", "ESTRELLAS"]].mean()
+    min, max = grupo["PAGO"].min().to_list(
+    ), grupo["PAGO"].max().to_list()  # minimos y maximos
+    desv = grupo["ESTRELLAS"].std().to_list()  # desviacion estandar
+    # obtenemos los indices y los metemos en una lista
+    indexs = [ind for ind in prom.index]
+    # creamos el diccionario donde la llave es el nombre de la columna y el valor es la lista
+    new_data = {"CANTIDAD": cantidad, "PROMEDIO": prom.loc[:, ("PAGO")], "MAXIMO": max,
+                "MINIMO": min, "ESTRELLAS": prom.loc[:, ("ESTRELLAS")], "DESV. ESTRELLAS": desv}
+    new_df = pd.DataFrame(new_data, index=indexs)  # creamos el nuevo DF
+    new_df["CANTIDAD"] = new_df["CANTIDAD"].apply(
+        lambda x: int(x))  # 1 if str(x)=="True" else 0
+    # agregamos la columna pago a partir del anterior df
+    new_df["PROMEDIO"] = prom["PAGO"].round(2)
+    # agregamos la columna pago a partir del anterior df
+    new_df["MAXIMO"] = max
+    # agregamos la columna pago a partir del anterior df
+    new_df["MINIMO"] = min
+    # agregamos la columna estrellas a partir del anterior df
+    new_df["ESTRELLAS"] = prom["ESTRELLAS"].round(2)
+    new_df["DESV. ESTRELLAS"] = new_df["DESV. ESTRELLAS"].round(
+        2).fillna(0)  # redondeamos y rellenamos con 0
+    # agregamos la columna comentarios a partir del anterior df
+    new_df["COMENTARIOS"] = count_comentarios
+
+    new_df = new_df.sort_index()  # ordenamos el df
+
+    return new_df
+
+# %%
+
+
+def calcular_estadisticas(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df["PAGO"] > 0]
+    df["COMENTARIO"] = df["COMENTARIO"].apply(
+        lambda x: int(x))  # 1 if str(x)=="True" else 0
+    # agrupamos los datos
+    grupo = df.groupby("MODELO")
+
+    # obtenemos los datos
+    # contabilizacion de comentariso True
+    count_comentarios = grupo["COMENTARIO"].sum()
+    cantidad = grupo["COMENTARIO"].count()  # cantidad
+    # promedio de Pago y estrellas, no se convierte a lista
+    prom = grupo[["PAGO", "ESTRELLAS"]].mean()
+    min, max = grupo["PAGO"].min(), grupo["PAGO"].max()  # minimos y maximos
+    desv = grupo["ESTRELLAS"].std()  # desviacion estandar
+    # obtenemos los indices y los metemos en una lista
+    indexs = [ind for ind in prom.index]
+    # creamos el diccionario donde la llave es el nombre de la columna y el valor es la lista
+    new_data = {"CANTIDAD": cantidad, "PROMEDIO": prom.loc[:, ("PAGO")], "MAXIMO": max,
+                "MINIMO": min, "ESTRELLAS": prom.loc[:, ("ESTRELLAS")], "DESV. ESTRELLAS": desv}
+    new_df = pd.DataFrame(new_data, index=indexs)  # creamos el nuevo DF
+    new_df["CANTIDAD"] = new_df["CANTIDAD"].apply(
+        lambda x: int(x))  # 1 if str(x)=="True" else 0
+    # agregamos la columna pago a partir del anterior df
+    new_df["PROMEDIO"] = prom["PAGO"].round(2)
+    # agregamos la columna pago a partir del anterior df
+    new_df["MAXIMO"] = max
+    # agregamos la columna pago a partir del anterior df
+    new_df["MINIMO"] = min
+    # agregamos la columna estrellas a partir del anterior df
+    new_df["ESTRELLAS"] = prom["ESTRELLAS"].round(2)
+    new_df["DESV. ESTRELLAS"] = new_df["DESV. ESTRELLAS"].round(
+        2).fillna(0)  # redondeamos y rellenamos con 0
+    # agregamos la columna comentarios a partir del anterior df
+    new_df["COMENTARIOS"] = count_comentarios
+
+    new_df = new_df.sort_index()  # ordenamos el df
+
+    return new_df
+# %%

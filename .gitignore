@@ -157,4 +157,5 @@ cython_debug/
 # Support for Project snippet scope
 !.vscode/*.code-snippets
 workspace.code-workspace
+.vscode/
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
